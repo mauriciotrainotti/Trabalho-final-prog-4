@@ -1,42 +1,202 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #181818;
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+}
+
+
+
+/* Estilo do cabeçalho */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+  background-color: #0c9200; /* Azul escuro */
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 15px; /* Reduzi o padding */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+  box-sizing: border-box; /* Inclui padding no tamanho total */
+}
+
+/* Botão de menu */
+.menu-button {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+/* Seção de saldo */
+.balance-section {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap; /* Permite quebra de linha se necessário */
+  max-width: 50%; /* Limita a largura total */
+}
+
+/* Texto do saldo */
+.balance {
+  font-size: 16px;
+  overflow: hidden; /* Esconde texto longo */
+  text-overflow: ellipsis; /* Adiciona reticências para texto muito grande */
+  white-space: nowrap; /* Impede quebra de linha */
+}
+
+/* Botão de adicionar saldo */
+.add-balance-button {
+  background-color: #3b82f6; /* Azul mais claro */
+  border: none;
+  border-radius: 5px;
+  color: white;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  flex-shrink: 0; /* Evita que o botão diminua de tamanho */
+}
+
+.add-balance-button:hover {
+  background-color: #2563eb; /* Azul mais escuro */
+}
+
+/* Div abaixo do header */
+.content-area {
+  width: 90vw; /* Largura de 80% da tela */
+  height: 60vh; /* Ocupa 60% da altura da tela */
+  background-color: #252525; /* Cor mais escura */
+  color: white;
+  margin-top: 100px; /* Deixa um espaço entre o header fixo e a div */
+  border-radius: 15px; /* Bordas arredondadas */
+  padding: 20px; /* Espaçamento interno */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  
+  margin-left: 10%;
+}
+
+/* Estilo para a saudação do usuário */
+.user-info {
+  margin-bottom: 300px; /* Espaçamento entre a saudação e a próxima seção */
+
+}
+
+.greeting {
+  font-size: 20px;
+  font-weight: bold;
+}
+
+/* Estilo para a área de despesas */
+.expense-info {
+  display: flex;
+  justify-content: space-between; /* Espaça o texto e o botão */
+  width: 100%;
+  align-items: center;
+}
+
+.monthly-expense {
+  font-size: 18px;
+  font-weight: normal;
+}
+
+.add-expense-button {
+  background-color: #4CAF50; /* Cor verde */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.add-expense-button:hover {
+  background-color: #45a049; /* Cor verde mais escura ao passar o mouse */
+}
+
+
+/* Modal Overlay */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Modal Box */
+.modal {
+  background-color: rgb(39, 39, 39);
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 300px;
   text-align: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+/* Modal Buttons */
+.modal-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 15px;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.modal-buttons button {
+  padding: 8px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.modal-buttons button:first-child {
+  background-color: #3b82f6;
+  color: white;
 }
 
-.card {
-  padding: 2em;
+.modal-buttons button:last-child {
+  background-color: #f44336;
+  color: white;
 }
 
-.read-the-docs {
-  color: #888;
+.modal-buttons button:hover {
+  opacity: 0.9;
 }
+/* Estilização do input no modal */
+.modal input {
+  width: 80%; /* Ocupa toda a largura disponível */
+  padding: 10px; /* Espaçamento interno */
+  font-size: 16px; /* Tamanho do texto */
+  border: 1px solid #ccc; /* Borda cinza clara */
+  border-radius: 8px; /* Bordas arredondadas */
+  margin-top: 10px; /* Espaçamento superior */
+  margin-bottom: 15px; /* Espaçamento inferior */
+  outline: none; /* Remove o contorno ao focar */
+  transition: border-color 0.3s ease; /* Animação ao focar */
+}
+
+.modal input:focus {
+  border-color: #3b82f6; /* Cor da borda ao focar */
+  box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); /* Sombra ao focar */
+}
+
+
