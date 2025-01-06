@@ -1,0 +1,80 @@
+/* Estilo do corpo da tela de Login */
+.content-area {
+  width: 90vw; /* Largura de 80% da tela */
+  height: 60vh; /* Ocupa 60% da altura da tela */
+  background-color: #252525; /* Cor mais escura */
+  color: white;
+  margin-top: 100px; /* Deixa um espaço entre o header fixo e a div */
+  border-radius: 15px; /* Bordas arredondadas */
+  padding: 20px; /* Espaçamento interno */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-left: 10%;
+}
+
+/* Estilo dos inputs */
+input {
+  width: 80%; /* Ocupa toda a largura disponível */
+  padding: 10px; /* Espaçamento interno */
+  font-size: 16px; /* Tamanho do texto */
+  border: 1px solid #ccc; /* Borda cinza clara */
+  border-radius: 8px; /* Bordas arredondadas */
+  margin-top: 10px; /* Espaçamento superior */
+  margin-bottom: 15px; /* Espaçamento inferior */
+  outline: none; /* Remove o contorno ao focar */
+  transition: border-color 0.3s ease; /* Animação ao focar */
+}
+
+input:focus {
+  border-color: #3b82f6; /* Cor da borda ao focar */
+  box-shadow: 0 0 5px rgba(59, 130, 246, 0.5); /* Sombra ao focar */
+}
+
+/* Estilo do botão de Login */
+.submit-button {
+  background-color: #3b82f6; /* Azul claro */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.submit-button:hover {
+  background-color: #2563eb; /* Azul mais escuro */
+}
+
+/* Estilo do botão de login com Google */
+.google-login-button {
+  background-color: #4285F4; /* Azul do Google */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 10px 20px;
+  font-size: 16px;
+  margin-top: 15px;
+  cursor: pointer;
+}
+
+.google-login-button:hover {
+  background-color: #357ae8; /* Azul mais escuro do Google */
+}
+
+/* Estilo do botão de navegação para cadastro */
+.navigate-signup-button {
+  background-color: #0c9200; /* Verde escuro */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  padding: 8px 16px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.navigate-signup-button:hover {
+  background-color: #2e8b57; /* Verde mais escuro */
+}

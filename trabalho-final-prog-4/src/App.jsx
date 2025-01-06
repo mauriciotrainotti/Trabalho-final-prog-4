@@ -1,254 +1,105 @@
 import { useState, useEffect } from 'react';
-import { db } from './firebaseConfig';
-import { doc, getDoc, setDoc, updateDoc, collection, addDoc } from 'firebase/firestore';
+import { db, auth, googleProvider } from './firebaseConfig';
+import { createUserWithEmailAndPassword, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth';
+import { getDoc, doc, setDoc } from 'firebase/firestore';
+import { useNavigate } from 'react-router-dom'; // Importando o hook de navegação
 import './App.css';
+import Cadastro from './Cadastro';
+import TelaInicial from './TelaInicial';
+import Login from './Login';
 
 function App() {
-  // States para controlar a visibilidade dos modais
+  const [currentScreen, setCurrentScreen] = useState('cadastro');
   const [modalAdicionarSaldoAberto, setModalAdicionarSaldoAberto] = useState(false);
-  const [modalAdicionarDespesaAberto, setModalAdicionarDespesaAberto] = useState(false);
+  const [saldo, setSaldo] = useState(500);
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate(); // Usando o hook de navegação
 
-  // States para o saldo e o valor do novo saldo
-  const [saldo, setSaldo] = useState(500);  // Valor inicial
-  const [novoSaldo, setNovoSaldo] = useState('');
+  // Função para alternar entre as telas
+  const navegarPara = (tela) => setCurrentScreen(tela);
 
-  // State para armazenar as despesas
-  const [despesas, setDespesas] = useState([]);
+  // Função de login com Google
+  const handleLoginGoogle = async () => {
+    try {
+      const result = await signInWithPopup(auth, googleProvider);
+      const user = result.user;
+      const userDocRef = doc(db, 'usuarios', user.uid);
+      const docSnap = await getDoc(userDocRef);
 
-  // State para a despesa em adição
-  const [despesa, setDespesa] = useState({
-    valor: '',
-    categoria: '',
-    data: '',
-    titulo: ''
-  });
-
-  // Função para obter o saldo do Firebase (se houver)
-  useEffect(() => {
-    const obterSaldo = async () => {
-      const docRef = doc(db, 'usuarios', 'saldo'); // Certifique-se de que o nome do documento seja correto
-      const docSnap = await getDoc(docRef);
-      
-      if (docSnap.exists()) {
-        setSaldo(docSnap.data().valor); // Atualiza o saldo com o valor vindo do Firebase
-      } else {
-        console.log("No such document!");
+      if (!docSnap.exists()) {
+        await setDoc(userDocRef, {
+          uid: user.uid,
+          nome: user.displayName || '',
+          email: user.email,
+          fotoUrl: user.photoURL || '',
+          criadoEm: new Date().toISOString(),
+        });
       }
-    };
 
-    obterSaldo();
-  }, []);
-
-  // Função para abrir o modal de adicionar saldo
-  const abrirModalAdicionarSaldo = () => {
-    setModalAdicionarSaldoAberto(true);
-  };
-
-  // Função para fechar o modal de adicionar saldo
-  const fecharModalAdicionarSaldo = () => {
-    setModalAdicionarSaldoAberto(false);
-  };
-
-  // Função para atualizar o saldo no Firebase
-  const atualizarSaldo = async () => {
-    const novoSaldoValue = parseFloat(novoSaldo);
-    if (!isNaN(novoSaldoValue)) {
-      setSaldo(novoSaldoValue); // Atualiza o estado com o novo saldo
-      const docRef = doc(db, 'usuarios', 'saldo'); // Certifique-se de que o nome do documento seja correto
-      await setDoc(docRef, { valor: novoSaldoValue }); // Atualiza o saldo no Firebase
-      setModalAdicionarSaldoAberto(false); // Fecha o modal
-      setNovoSaldo(''); // Limpa o campo de input
+      setUser(user);
+      navigate('/TelaInicial'); // Navega para a tela inicial após o login
+    } catch (error) {
+      console.error('Erro ao autenticar com Google:', error);
     }
   };
 
-  // Função para abrir o modal de adicionar despesa
-  const abrirModalAdicionarDespesa = () => {
-    setModalAdicionarDespesaAberto(true);
+  // Função de login com email e senha
+  const handleLoginEmail = async (email, senha) => {
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, senha);
+      const user = userCredential.user;
+
+      setUser(user);
+      navigate('/TelaInicial'); // Navega para a tela inicial após o login
+    } catch (error) {
+      console.error('Erro ao autenticar com email:', error);
+    }
   };
 
-  // Função para fechar o modal de adicionar despesa
-  const fecharModalAdicionarDespesa = () => {
-    setModalAdicionarDespesaAberto(false);
-  };
+  // Função de cadastro de usuário
+  const handleCadastro = async (email, senha, nome) => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, senha);
+      const user = userCredential.user;
+      const userDocRef = doc(db, 'usuarios', user.uid);
+      await setDoc(userDocRef, {
+        uid: user.uid,
+        nome: nome || '',
+        email: user.email,
+        criadoEm: new Date().toISOString(),
+      });
 
-  // Função para lidar com as mudanças nos inputs de despesa
-  const handleMudancaInput = (e) => {
-    const { name, value } = e.target;
-    setDespesa({ ...despesa, [name]: value });
-  };
-
-  // Função para enviar a despesa e salvar no Firebase
-  const handleEnviarDespesa = async (e) => {
-    e.preventDefault();
-    
-    const valorDespesa = parseFloat(despesa.valor);
-    if (!isNaN(valorDespesa)) {
-      // Adiciona a nova despesa ao estado de despesas
-      const novaDespesa = {
-        ...despesa,
-        valor: valorDespesa,
-      };
-      
-      setDespesas([...despesas, novaDespesa]);
-
-      // Atualiza o saldo subtraindo a despesa
-      const saldoAtualizado = saldo - valorDespesa;
-      setSaldo(saldoAtualizado);
-
-      // Atualiza o saldo no Firebase
-      const docRef = doc(db, 'usuarios', 'saldo'); 
-      await updateDoc(docRef, { valor: saldoAtualizado });
-
-      // Adiciona a despesa na coleção "despesas" do Firebase
-      const despesasRef = collection(db, 'despesas');
-      await addDoc(despesasRef, novaDespesa); // Adiciona a despesa no Firestore
-
-      // Fecha o modal após salvar a despesa
-      fecharModalAdicionarDespesa();
-      setDespesa({ valor: '', categoria: '', data: '', titulo: '' }); // Limpa os campos de despesa
+      setUser(user); // Atualiza o estado do usuário
+      navigate('/login'); // Redireciona para a tela de login após o cadastro
+    } catch (error) {
+      if (error.code === 'auth/email-already-in-use') {
+        alert('Este email já está cadastrado. Tente outro.');
+      } else {
+        console.error('Erro ao cadastrar usuário no Firestore:', error);
+      }
     }
   };
 
   return (
     <div className="App">
-      <header className="header">
-        <button className="menu-button">☰ Menu</button>
-        <div className="balance-section">
-          <span className="balance">Saldo Atual: R$ {saldo.toFixed(2)}</span>
-          <button className="add-balance-button" onClick={abrirModalAdicionarSaldo}>
-            + Adicionar Saldo
-          </button>
-        </div>
-      </header>
-
-      <div className="content-area">
-        <div className="user-info">
-          <span className="greeting">Olá, João!</span>
-        </div>
-        
-
-        <div className="expense-info">
-          <span className="monthly-expense">Despesa mensal: R$ {despesas.reduce((total, despesa) => total + despesa.valor, 0).toFixed(2)}</span>
-          <button className="add-expense-button" onClick={abrirModalAdicionarDespesa}>
-            Adicionar despesa
-          </button>
-        </div>
-      </div>
-
-      {/* Listagem de Despesas fora da content-area */}
-      <div className="despesas-list">
-        <h3>Despesas:</h3>
-        {despesas.map((despesa, index) => (
-          <div key={index} className="despesa-item">
-            <span>{despesa.titulo} - R$ {despesa.valor.toFixed(2)}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Modal de Adicionar Saldo */}
-      {modalAdicionarSaldoAberto && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>Adicionar Saldo</h2>
-            <form onSubmit={e => { e.preventDefault(); atualizarSaldo(); }}>
-              <div className="modal-field">
-                <label>Valor</label>
-                <input
-                  type="number"
-                  placeholder="Digite o valor"
-                  value={novoSaldo}
-                  onChange={(e) => setNovoSaldo(e.target.value)}
-                  required
-                />
-              </div>
-
-              <button type="submit" className="modal-submit-button">
-                Salvar Saldo
-              </button>
-            </form>
-
-            <button className="modal-close-button" onClick={fecharModalAdicionarSaldo}>
-              Fechar
-            </button>
-          </div>
-        </div>
+      {currentScreen === 'TelaInicial' && (
+        <TelaInicial saldo={saldo} setModalAdicionarSaldoAberto={setModalAdicionarSaldoAberto} user={user} />
       )}
 
-      {/* Modal de Adicionar Despesa */}
-      {modalAdicionarDespesaAberto && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h2>Adicionar Despesa</h2>
-            <form onSubmit={handleEnviarDespesa}>
-              <div className="modal-field">
-                <label>Valor</label>
-                <input
-                  type="number"
-                  name="valor"
-                  value={despesa.valor}
-                  onChange={handleMudancaInput}
-                  placeholder="Digite o valor"
-                  required
-                />
-              </div>
+      {currentScreen === 'cadastro' && (
+        <Cadastro
+          handleCadastro={handleCadastro}
+          handleLoginGoogle={handleLoginGoogle}
+          voltarParaHome={() => navegarPara('TelaInicial')}
+          navegarParaLogin={() => navegarPara('login')}
+        />
+      )}
 
-              <div className="modal-field">
-                <label>Categoria</label>
-                <select
-                  name="categoria"
-                  value={despesa.categoria}
-                  onChange={handleMudancaInput}
-                  required
-                >
-                  <option value="">Selecione a categoria</option>
-                  <option value="Alimentação">Alimentação</option>
-                  <option value="Assinaturas e serviços">Assinaturas e serviços</option>
-                  <option value="Bares e restaurantes">Bares e restaurantes</option>
-                  <option value="Casa">Casa</option>
-                  <option value="Compras">Compras</option>
-                  <option value="Cuidados pessoais">Cuidados pessoais</option>
-                  <option value="Dívidas e empréstimos">Dívidas e empréstimos</option>
-                  <option value="Educação">Educação</option>
-                  <option value="Família e filhos">Família e filhos</option>
-                  <option value="Impostos e Taxas">Impostos e Taxas</option>
-                  <option value="Investimentos">Investimentos</option>
-                  <option value="Lazer e hobbies">Lazer e hobbies</option>
-                  <option value="Mercado">Mercado</option>
-                  <option value="Outros">Outros</option>
-                </select>
-              </div>
-
-              <div className="modal-field">
-                <label>Data</label>
-                <input
-                  type="date"
-                  name="data"
-                  value={despesa.data}
-                  onChange={handleMudancaInput}
-                  required
-                />
-              </div>
-
-              <div className="modal-field">
-                <label>Título</label>
-                <input
-                  type="text"
-                  name="titulo"
-                  value={despesa.titulo}
-                  onChange={handleMudancaInput}
-                  placeholder="Digite o título da despesa"
-                  required
-                />
-              </div>
-
-              <button type="submit" className="modal-submit-button">Salvar despesa</button>
-            </form>
-
-            <button className="modal-close-button" onClick={fecharModalAdicionarDespesa}>
-              Fechar
-            </button>
-          </div>
-        </div>
+      {currentScreen === 'login' && (
+        <Login
+          handleLoginGoogle={handleLoginGoogle}
+          handleLoginEmail={handleLoginEmail} // Passando a função de login com email
+        />
       )}
     </div>
   );

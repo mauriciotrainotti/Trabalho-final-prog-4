@@ -1,0 +1,123 @@
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background-color: #181818;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh; /* Garantir que ocupa a altura total da tela */
+}
+
+.App {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+}
+
+.content-area {
+  width: 80%;
+  max-width: 400px; /* Máxima largura para o conteúdo */
+  background-color: #252525; /* Cor mais escura */
+  color: white;
+  border-radius: 15px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 400px; /* Altura mínima */
+  overflow: hidden;
+  position: relative; /* Garantir que elementos internos não saiam da área */
+}
+
+h2 {
+  color: #ffffff;
+  font-size: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  background-color: #333;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 5px rgba(59, 130, 246, 0.5);
+  outline: none;
+}
+
+button {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #2563eb;
+}
+
+button[type="submit"] {
+  background-color: #0c9200;
+  margin-bottom: 15px;
+}
+
+button[type="submit"]:hover {
+  background-color: #156f00;
+}
+
+button[type="button"] {
+  background-color: #db4437;
+  margin-bottom: 15px;
+}
+
+button[type="button"]:hover {
+  background-color: #c1351d;
+}
+
+p {
+  font-size: 14px;
+  color: #ddd;
+}
+
+p button {
+  color: #3b82f6;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+p button:hover {
+  color: #2563eb;
+}
+
+button:last-child {
+  background-color: #f44336;
+  margin-top: 20px;
+}
+
+button:last-child:hover {
+  background-color: #e53935;
+}
+
+input[type="password"]:nth-of-type(2) {
+  margin-bottom: 16px;
+}
