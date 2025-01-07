@@ -1,6 +1,7 @@
 import React from 'react';
+import ModalAdicionarSaldo from './ModalAdicionarSaldo'; // Supondo que o modal esteja no mesmo diretório
 
-function TelaInicial({ saldo, setModalAdicionarSaldoAberto, user }) {
+function TelaInicial({ saldo, setModalAdicionarSaldoAberto, modalAdicionarSaldoAberto, user, onSaldoAlterado }) {
   return (
     <div>
       <header className="header">
@@ -17,19 +18,28 @@ function TelaInicial({ saldo, setModalAdicionarSaldoAberto, user }) {
       </header>
 
       <div className="content-area">
-      {user ? (
-  <div className="user-info">
-    <span className="ola-user">Olá, {user.displayName || 'Usuário'}!</span>
-  </div>
-) : (
-  <div className="not-logged-in">
-    <span>Você não está logado.</span>
-    <button onClick={() => alert("Você precisa estar logado.")}>
-      Ir para Cadastro
-    </button>
-  </div>
-)}
+        {user ? (
+          <div className="user-info">
+            <span className="ola-user">Olá, {user.nome}!</span>
+            {console.log (user)}
+          </div>
+        ) : (
+          <div className="not-logged-in">
+            <span>Você não está logado.</span>
+            <button onClick={() => alert("Você precisa estar logado.")}>
+              Ir para Cadastro
+            </button>
+          </div>
+        )}
       </div>
+
+
+      <ModalAdicionarSaldo 
+        isOpen={modalAdicionarSaldoAberto} 
+        onClose={() => setModalAdicionarSaldoAberto(false)}
+        onSaldoAlterado={onSaldoAlterado}
+        saldo={saldo}
+      />
     </div>
   );
 }

@@ -4,15 +4,23 @@ import './Login.css';
 function Login({ handleLoginEmail, handleLoginGoogle }) {
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
+  const [mensagemErro, setMensagemErro] = useState(''); // Estado para a mensagem de erro
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    handleLoginEmail(email, senha);
+    
+    const erro = await handleLoginEmail(email, senha);
+    if (erro) {
+      setMensagemErro(erro); // Define a mensagem de erro vinda do Firebase
+    }
   };
 
   return (
     <div className="content-area">
       <h2>Login</h2>
+
+      {mensagemErro && <p className="mensagem-erro">{mensagemErro}</p>}
+
       <form onSubmit={handleSubmit}>
         <input
           type="email"
