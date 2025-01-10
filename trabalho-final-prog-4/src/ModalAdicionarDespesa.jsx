@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import './ModalAdicionarDespesa.css';
+
 
 function ModalAdicionarDespesa({ isOpen, onClose, user, saldo, setSaldo }) {
   const [valor, setValor] = useState("");
