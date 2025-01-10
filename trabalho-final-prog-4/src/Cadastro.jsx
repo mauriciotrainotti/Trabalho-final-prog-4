@@ -76,13 +76,13 @@ function Cadastro({ handleCadastro, handleLoginGoogle, navegarParaLogin }) {
           placeholder="Confirmar Senha"
           required
         />
-        <button type="submit">Cadastrar</button>
+        <button className='botao-cadastrar' type="submit">Cadastrar</button>
       </form>
 
-      <button type="button" onClick={handleCadastroGoogle}>Cadastrar com Google</button>
+      <button className="botao-google" type="button" onClick={handleCadastroGoogle}>Cadastrar com Google</button>
 
       <p>
-        Já possui cadastro? <button onClick={navegarParaLogin}>Fazer login</button>
+        Já possui cadastro? <button className='botao-login' onClick={navegarParaLogin}>Fazer login</button>
       </p>
     </div>
   );

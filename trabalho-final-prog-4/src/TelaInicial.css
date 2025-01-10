@@ -1,0 +1,115 @@
+/* Estilos gerais */
+body {
+    background-color: #121212;
+    color: #fff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+  }
+  
+  /* Cabeçalho */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: #1e1e1e;
+    border-bottom: 2px solid #0d9b00;
+  }
+  
+  .menu-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+  }
+  
+  .balance-section {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .balance {
+    font-size: 18px;
+    font-weight: bold;
+    color: #0d9b00;
+  }
+  
+  .add-balance-button {
+    background: #0d9b00;
+    border: none;
+    padding: 8px 15px;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.3s;
+  }
+  
+  .add-balance-button:hover {
+    background: #0b7e00;
+  }
+  
+  /* Área de conteúdo */
+  .content-area {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* Centraliza os elementos */
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+    height: 60vh; /* Mantém a seção no centro da tela */
+  }
+  
+  .user-info {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+  
+  .ola-user {
+    font-size: 20px;
+    font-weight: bold;
+    color: #ddd;
+    margin-bottom: 20px;
+  }
+  
+  /* Seção de usuário não logado */
+  .not-logged-in {
+    font-size: 16px;
+    color: #bbb;
+  }
+  
+  .not-logged-in button {
+    background: #0d9b00;
+    border: none;
+    padding: 10px;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+  }
+  
+  .not-logged-in button:hover {
+    background: #0b7e00;
+  }
+  
+  /* Botão para adicionar despesa */
+  .add-expense-button {
+    background: #2e0041;
+    border: none;
+    padding: 12px 18px;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: 30px;
+    transition: 0.3s;
+  }
+  
+  .add-expense-button:hover {
+    background: #2e0041;
+  }
+  

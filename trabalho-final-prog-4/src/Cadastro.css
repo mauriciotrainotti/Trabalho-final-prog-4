@@ -39,4 +39,13 @@ body {
   font-size: 14px;
   margin-bottom: 10px;
 }
-
+.botao-google{
+  margin: 15px;
+  background-color: #3b82f6;
+}
+.botao-cadastrar{
+  background-color: #3b82f6;
+}
+.botao-login{
+  background-color: #3b82f6;
+}
