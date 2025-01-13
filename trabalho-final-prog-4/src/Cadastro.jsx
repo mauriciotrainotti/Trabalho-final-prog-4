@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
-import './Cadastro.css';
+import React, { useState } from "react";
+import "./Cadastro.css";
 
 function Cadastro({ handleCadastro, handleLoginGoogle, navegarParaLogin }) {
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [confirmarSenha, setConfirmarSenha] = useState('');
-  const [nome, setNome] = useState('');
-  const [mensagemSucesso, setMensagemSucesso] = useState('');
+  if (!handleCadastro) {
+    console.error("Erro: handleCadastro não foi passado corretamente como prop.");
+  }
+
+  const [email, setEmail] = useState("");
+  const [senha, setSenha] = useState("");
+  const [confirmarSenha, setConfirmarSenha] = useState("");
+  const [nome, setNome] = useState("");
+  const [mensagemSucesso, setMensagemSucesso] = useState("");
 
   const handleSubmitCadastro = async (e) => {
     e.preventDefault();
@@ -16,28 +20,35 @@ function Cadastro({ handleCadastro, handleLoginGoogle, navegarParaLogin }) {
       return;
     }
 
-    const sucesso = await handleCadastro(email, senha, nome);
-
-    if (sucesso) {
-      setMensagemSucesso("Usuário cadastrado com sucesso! Redirecionando...");
-      setTimeout(() => {
-        navegarParaLogin();
-      }, 2000);
-    } else {
-      alert("Erro ao cadastrar usuário. Tente novamente.");
+    try {
+      const sucesso = await handleCadastro(email, senha, nome);
+      if (sucesso) {
+        setMensagemSucesso("Usuário cadastrado com sucesso! Redirecionando...");
+        setTimeout(() => {
+          navegarParaLogin();
+        }, 2000);
+      } else {
+        alert("Erro ao cadastrar usuário. Tente novamente.");
+      }
+    } catch (error) {
+      console.error("Erro no handleSubmitCadastro:", error);
+      alert("Erro inesperado ao cadastrar.");
     }
   };
 
   const handleCadastroGoogle = async () => {
-    const sucesso = await handleLoginGoogle(); // Captura o sucesso do cadastro pelo Google
-
-    if (sucesso) {
-      setMensagemSucesso("Cadastro realizado com sucesso via Google! Redirecionando...");
-      setTimeout(() => {
-        navegarParaLogin();
-      }, 2000);
-    } else {
-      alert("Erro ao cadastrar com Google. Tente novamente.");
+    try {
+      const sucesso = await handleLoginGoogle();
+      if (sucesso) {
+        setMensagemSucesso("Cadastro realizado com sucesso via Google! Redirecionando...");
+        setTimeout(() => {
+          navegarParaLogin();
+        }, 2000);
+      } else {
+        alert("Erro ao cadastrar com Google. Tente novamente.");
+      }
+    } catch (error) {
+      console.error("Erro ao cadastrar com Google:", error);
     }
   };
 
@@ -76,13 +87,15 @@ function Cadastro({ handleCadastro, handleLoginGoogle, navegarParaLogin }) {
           placeholder="Confirmar Senha"
           required
         />
-        <button className='botao-cadastrar' type="submit">Cadastrar</button>
+        <button className="botao-cadastrar" type="submit">Cadastrar</button>
       </form>
 
-      <button className="botao-google" type="button" onClick={handleCadastroGoogle}>Cadastrar com Google</button>
+      <button className="botao-google" type="button" onClick={handleCadastroGoogle}>
+        Cadastrar com Google
+      </button>
 
       <p>
-        Já possui cadastro? <button className='botao-login' onClick={navegarParaLogin}>Fazer login</button>
+        Já possui cadastro? <button className="botao-login" onClick={navegarParaLogin}>Fazer login</button>
       </p>
     </div>
   );

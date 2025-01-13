@@ -5,11 +5,16 @@ import './TelaInicial.css';
 
 function TelaInicial({ saldo, setModalAdicionarSaldoAberto, modalAdicionarSaldoAberto, user, onSaldoAlterado }) {
   const [modalDespesaAberto, setModalDespesaAberto] = useState(false);
+  const [despesas, setDespesas] = useState([]); // Estado para armazenar despesas
+
+  // Função para adicionar nova despesa na lista
+  const adicionarDespesaNoEstado = (novaDespesa) => {
+    setDespesas((prevDespesas) => [...prevDespesas, novaDespesa]);
+  };
 
   return (
     <div>
       <header className="header">
-
         <div className="balance-section">
           <span className="balance">Saldo Atual: R$ {saldo.toFixed(2)}</span>
           <button
@@ -25,10 +30,8 @@ function TelaInicial({ saldo, setModalAdicionarSaldoAberto, modalAdicionarSaldoA
         {user ? (
           <div className="user-info">
             <span className="ola-user">Olá, {user.nome}!</span>
-            {console.log(user)}
-<br />
-<br />
-            {/* Botão para abrir o modal de adicionar despesa */}
+            <br />
+            <br />
             <button 
               className="add-expense-button"
               onClick={() => setModalDespesaAberto(true)}
@@ -46,7 +49,26 @@ function TelaInicial({ saldo, setModalAdicionarSaldoAberto, modalAdicionarSaldoA
         )}
       </div>
 
-      {/* Modal de adicionar saldo */}
+      {/* LISTAGEM DAS DESPESAS */}
+      <div className="despesas-lista">
+        <h3>Despesas</h3>
+        {despesas.length === 0 ? (
+          <p>Nenhuma despesa cadastrada.</p>
+        ) : (
+          <ul>
+            {despesas.map((despesa, index) => (
+              <li key={index} className="despesa-item">
+                <strong>{despesa.descricao}</strong> {/* Agora exibe a descrição corretamente */}
+                <p>Data: {despesa.data}</p>
+                <p>Valor: R$ {despesa.valor.toFixed(2)}</p>
+                <p>Categoria: {despesa.categoria}</p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+
+      {/* Modais */}
       <ModalAdicionarSaldo 
         isOpen={modalAdicionarSaldoAberto} 
         onClose={() => setModalAdicionarSaldoAberto(false)}
@@ -54,13 +76,13 @@ function TelaInicial({ saldo, setModalAdicionarSaldoAberto, modalAdicionarSaldoA
         saldo={saldo}
       />
 
-      {/* Modal de adicionar despesa */}
       <ModalAdicionarDespesa 
         isOpen={modalDespesaAberto}
         onClose={() => setModalDespesaAberto(false)}
         user={user}
         saldo={saldo}
-        setSaldo={onSaldoAlterado} // Atualiza o saldo após adicionar despesa
+        setSaldo={onSaldoAlterado}
+        adicionarDespesaNoEstado={adicionarDespesaNoEstado} // Passando a função para o modal
       />
     </div>
   );
