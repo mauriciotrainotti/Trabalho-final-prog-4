@@ -1,13 +1,39 @@
-import React, { useState } from 'react';
-import ModalAdicionarSaldo from './ModalAdicionarSaldo'; 
+import React, { useState, useEffect } from "react";
+import ModalAdicionarSaldo from "./ModalAdicionarSaldo";
 import ModalAdicionarDespesa from "./ModalAdicionarDespesa";
-import './TelaInicial.css';
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { db } from "./firebaseConfig";
+import "./TelaInicial.css";
 
 function TelaInicial({ saldo, setModalAdicionarSaldoAberto, modalAdicionarSaldoAberto, user, onSaldoAlterado }) {
   const [modalDespesaAberto, setModalDespesaAberto] = useState(false);
-  const [despesas, setDespesas] = useState([]); // Estado para armazenar despesas
+  const [despesas, setDespesas] = useState([]);
 
-  // Função para adicionar nova despesa na lista
+  // Função para carregar as despesas do Firestore
+  useEffect(() => {
+    const carregarDespesas = async () => {
+      if (!user) return;
+
+      try {
+        const despesasRef = collection(db, "despesas");
+        const q = query(despesasRef, where("uid", "==", user.uid));
+        const querySnapshot = await getDocs(q);
+
+        const despesasCarregadas = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        setDespesas(despesasCarregadas);
+      } catch (error) {
+        console.error("Erro ao buscar despesas:", error);
+      }
+    };
+
+    carregarDespesas();
+  }, [user]); // Atualiza quando o usuário loga
+
+  // Adicionar nova despesa ao estado local
   const adicionarDespesaNoEstado = (novaDespesa) => {
     setDespesas((prevDespesas) => [...prevDespesas, novaDespesa]);
   };
@@ -58,8 +84,8 @@ function TelaInicial({ saldo, setModalAdicionarSaldoAberto, modalAdicionarSaldoA
           <ul>
             {despesas.map((despesa, index) => (
               <li key={index} className="despesa-item">
-                <strong>{despesa.descricao}</strong> {/* Agora exibe a descrição corretamente */}
-                <p>Data: {despesa.data}</p>
+                <strong>{despesa.descricao}</strong>
+                <p>Data: {new Date(despesa.data).toLocaleDateString()}</p>
                 <p>Valor: R$ {despesa.valor.toFixed(2)}</p>
                 <p>Categoria: {despesa.categoria}</p>
               </li>
@@ -82,7 +108,7 @@ function TelaInicial({ saldo, setModalAdicionarSaldoAberto, modalAdicionarSaldoA
         user={user}
         saldo={saldo}
         setSaldo={onSaldoAlterado}
-        adicionarDespesaNoEstado={adicionarDespesaNoEstado} // Passando a função para o modal
+        adicionarDespesaNoEstado={adicionarDespesaNoEstado}
       />
     </div>
   );

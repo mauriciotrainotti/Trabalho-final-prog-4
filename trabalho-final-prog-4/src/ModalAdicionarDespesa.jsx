@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { addDoc, collection, getDocs } from "firebase/firestore";
+import { addDoc, collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "./firebaseConfig";
 import "./ModalAdicionarDespesa.css";
 
@@ -14,11 +14,12 @@ function ModalAdicionarDespesa({ isOpen, onClose, user, saldo, setSaldo, adicion
     if (user) {
       const carregarDespesas = async () => {
         const despesasRef = collection(db, "despesas");
-        const querySnapshot = await getDocs(despesasRef);
-        const despesasList = [];
-        querySnapshot.forEach((doc) => {
-          despesasList.push({ id: doc.id, ...doc.data() });
-        });
+        const q = query(despesasRef, where("uid", "==", user.uid));
+        const querySnapshot = await getDocs(q);
+        const despesasList = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
         setDespesas(despesasList);
       };
 
@@ -30,49 +31,42 @@ function ModalAdicionarDespesa({ isOpen, onClose, user, saldo, setSaldo, adicion
 
   const handleSalvarDespesa = async () => {
     const valorNumerico = parseFloat(valor);
-
+  
     if (isNaN(valorNumerico) || valorNumerico <= 0) {
       alert("Por favor, insira um valor válido para a despesa.");
       return;
     }
-
+  
     if (!data || !categoria || !descricao.trim()) {
       alert("Preencha todos os campos antes de salvar.");
       return;
     }
-
+  
     if (saldo < valorNumerico) {
       alert("Saldo insuficiente para essa despesa.");
       return;
     }
-
-    // Criando o objeto da despesa
+  
     const novaDespesa = {
       uid: user.uid,
       valor: valorNumerico,
-      data,
+      data: data, // Mantendo a data sem conversão errada
       categoria,
       descricao: descricao.trim()
     };
-
+  
     try {
-      // Adicionando ao Firestore
       const docRef = await addDoc(collection(db, "despesas"), novaDespesa);
-
-      // Atualiza a lista de despesas na tela imediatamente
       adicionarDespesaNoEstado({ id: docRef.id, ...novaDespesa });
-
-      // Atualiza o saldo após cadastrar a despesa
       setSaldo(saldo - valorNumerico);
-
+  
       alert("Despesa adicionada com sucesso!");
-
-      // Limpando os campos
+  
       setValor("");
       setData("");
       setCategoria("");
       setDescricao("");
-
+  
       onClose();
     } catch (error) {
       console.error("Erro ao salvar a despesa:", error);
@@ -101,11 +95,7 @@ function ModalAdicionarDespesa({ isOpen, onClose, user, saldo, setSaldo, adicion
         />
 
         <label>Categoria:</label>
-        <select
-          value={categoria}
-          onChange={(e) => setCategoria(e.target.value)}
-          style={{ width: "100%", padding: "8px" }}
-        >
+        <select value={categoria} onChange={(e) => setCategoria(e.target.value)}>
           <option value="">Selecione uma categoria</option>
           <option value="Alimentação">Alimentação</option>
           <option value="Casa">Casa</option>
@@ -116,25 +106,14 @@ function ModalAdicionarDespesa({ isOpen, onClose, user, saldo, setSaldo, adicion
           <option value="Lazer">Lazer</option>
           <option value="Transporte">Transporte</option>
           <option value="Investimentos">Investimentos</option>
-          <option value="Roupas e Acessórios">Roupas e Acessórios</option>
-          <option value="Tecnologia">Tecnologia</option>
-          <option value="Viagens">Viagens</option>
           <option value="Outros">Outros</option>
         </select>
 
         <label>Descrição:</label>
-        <textarea
-          placeholder="Descreva a despesa..."
-          value={descricao}
-          onChange={(e) => setDescricao(e.target.value)}
-        ></textarea>
+        <textarea value={descricao} onChange={(e) => setDescricao(e.target.value)}></textarea>
 
-        <button onClick={handleSalvarDespesa} className="save-button">
-          Salvar
-        </button>
-        <button onClick={onClose} className="close-button">
-          Fechar
-        </button>
+        <button onClick={handleSalvarDespesa} className="save-button">Salvar</button>
+        <button onClick={onClose} className="close-button">Fechar</button>
       </div>
     </div>
   );
