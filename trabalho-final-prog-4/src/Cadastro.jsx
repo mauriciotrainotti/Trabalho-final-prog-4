@@ -11,28 +11,32 @@ function Cadastro({ handleCadastro, handleLoginGoogle, navegarParaLogin }) {
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [nome, setNome] = useState("");
   const [mensagemSucesso, setMensagemSucesso] = useState("");
+  const [mensagemErro, setMensagemErro] = useState("");
 
   const handleSubmitCadastro = async (e) => {
     e.preventDefault();
+    setMensagemErro(""); // Limpa mensagens de erro anteriores
 
     if (senha !== confirmarSenha) {
-      alert("As senhas não coincidem!");
+      setMensagemErro("As senhas não coincidem!");
       return;
     }
 
     try {
       const sucesso = await handleCadastro(email, senha, nome);
+      console.log("Resultado de handleCadastro:", sucesso);
+      
       if (sucesso) {
         setMensagemSucesso("Usuário cadastrado com sucesso! Redirecionando...");
         setTimeout(() => {
           navegarParaLogin();
         }, 2000);
       } else {
-        alert("Erro ao cadastrar usuário. Tente novamente.");
+        setMensagemErro("Erro ao cadastrar usuário. Tente novamente.");
       }
     } catch (error) {
       console.error("Erro no handleSubmitCadastro:", error);
-      alert("Erro inesperado ao cadastrar.");
+      setMensagemErro("Erro inesperado ao cadastrar.");
     }
   };
 
@@ -45,48 +49,25 @@ function Cadastro({ handleCadastro, handleLoginGoogle, navegarParaLogin }) {
           navegarParaLogin();
         }, 2000);
       } else {
-        alert("Erro ao cadastrar com Google. Tente novamente.");
+        setMensagemErro("Erro ao cadastrar com Google. Tente novamente.");
       }
     } catch (error) {
       console.error("Erro ao cadastrar com Google:", error);
+      setMensagemErro("Erro inesperado ao cadastrar com Google.");
     }
   };
 
   return (
     <div className="content-area">
       <h2>Cadastro</h2>
-
       {mensagemSucesso && <p className="mensagem-sucesso">{mensagemSucesso}</p>}
+      {mensagemErro && <p className="mensagem-erro">{mensagemErro}</p>}
 
       <form onSubmit={handleSubmitCadastro}>
-        <input
-          type="text"
-          value={nome}
-          onChange={(e) => setNome(e.target.value)}
-          placeholder="Nome"
-          required
-        />
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Email"
-          required
-        />
-        <input
-          type="password"
-          value={senha}
-          onChange={(e) => setSenha(e.target.value)}
-          placeholder="Senha"
-          required
-        />
-        <input
-          type="password"
-          value={confirmarSenha}
-          onChange={(e) => setConfirmarSenha(e.target.value)}
-          placeholder="Confirmar Senha"
-          required
-        />
+        <input type="text" value={nome} onChange={(e) => setNome(e.target.value)} placeholder="Nome" required />
+        <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="Email" required />
+        <input type="password" value={senha} onChange={(e) => setSenha(e.target.value)} placeholder="Senha" required />
+        <input type="password" value={confirmarSenha} onChange={(e) => setConfirmarSenha(e.target.value)} placeholder="Confirmar Senha" required />
         <button className="botao-cadastrar" type="submit">Cadastrar</button>
       </form>
 
